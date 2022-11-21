@@ -24,6 +24,7 @@ public class YandexSDK : MonoBehaviour
     private YaPlayer _player;
 
     public UnityEvent<YaPlayer> OnPlayerDataChanged;
+    public UnityEvent<RatingResult> OnRatingAsk;
 
     private YandexAds _ads;
 
@@ -34,6 +35,10 @@ public class YandexSDK : MonoBehaviour
 
     [DllImport("__Internal")]
     private static extern void DebugLog(string msg);
+
+    [DllImport("__Internal")]
+    private static extern void AskForRating();
+
 
     private void Start()
     {
@@ -93,5 +98,18 @@ public class YandexSDK : MonoBehaviour
         YaDevice device = (YaDevice)deviceID;
         DebugLog($"parsing - {device.ToString()}");
         return (YaDevice)deviceID;
+    }
+
+    public void RateGame()
+    {
+        AskForRating();
+    }
+
+    public void AskForRatingCallback(int resultID)
+    {
+        
+        RatingResult result = (RatingResult)resultID;
+        Debug.Log($"Rating callback return code: {resultID} - {result.ToString()}");
+        OnRatingAsk?.Invoke(result);
     }
 }

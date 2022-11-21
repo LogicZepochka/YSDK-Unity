@@ -67,6 +67,28 @@ mergeInto(LibraryManager.library, {
         })
     },
 
+    AskForRating: function () {
+        window.ysdk.feedback.canReview()
+            .then(({ value, reason }) => {
+                if (value) {
+                    window.ysdk.feedback.requestReview()
+                        .then(({ feedbackSent }) => {
+                            console.log(feedbackSent);
+                        })
+                } else {
+                    console.log(reason)
+                    var callbackCode = 4;
+                    switch (reason) {
+                        case "NO_AUTH": { callbackCode = 0; break; }
+                        case "GAME_RATED": { callbackCode = 1; break; }
+                        case "REVIEW_ALREADY_REQUESTED": { callbackCode = 2; break; }
+                        case "REVIEW_WAS_REQUESTED": { callbackCode = 3; break; }
+                    }
+                    window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", callbackCode);
+                }
+            });
+    },
+
     ShowAdvert: function () {
         window.ysdk.adv.showFullscreenAdv({
             callbacks: {
