@@ -1,0 +1,93 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class DemoScript : MonoBehaviour
+{
+
+    public TMP_Text Device;
+    public TMP_Text AdsText;
+
+    public PlayerURLImage PlayerImage;
+    public TMP_Text PlayerName;
+
+    public void OnPlayerDataUpdated(YaPlayer player)
+    {
+        PlayerName.text = player.Name;
+        PlayerImage.LoadURLImage(player.ImageURL);
+    }
+
+    public void UpdateDeviceData()
+    {
+        string result;
+        switch (YandexSDK.Current.Device)
+        {
+            case YaDevice.Desktop: { result = "Desktop"; break; }
+            case YaDevice.Mobile: { result = "Mobile"; break; }
+            case YaDevice.Tabled: { result = "Tabled"; break; }
+            case YaDevice.TV: { result = "TV"; break; }
+            default:
+                {
+                    result = "Unknown";
+                    break;
+                }
+        }
+        Device.text = result;
+    }
+
+    public void ShowAd()
+    {
+        YandexSDK.Current.Ads.ShowClassicAd(OnAdvertShown);
+    }
+
+    public void ShowRewardedAd()
+    {
+        YandexSDK.Current.Ads.ShowRewardedAd(OnRewardedAdvertShown);
+    }
+
+    public void OnAdvertShown(AdResult result)
+    {
+        switch(result)
+        {
+            case AdResult.OK:
+                {
+                    AdsText.text = "Ad showed";
+                    break;
+                }
+            case AdResult.Error:
+                {
+                    AdsText.text = "Ad ERROR";
+                    break;
+                }
+            case AdResult.Offline:
+                {
+                    AdsText.text = "Ad offline";
+                    break;
+                }
+        }
+    }
+
+    public void OnRewardedAdvertShown(RewardAdResult result)
+    {
+        switch (result)
+        {
+            case RewardAdResult.Rewarded:
+                {
+                    AdsText.text = "Ad rewarded";
+                    break;
+                }
+            case RewardAdResult.Error:
+                {
+                    AdsText.text = "Ad ERROR";
+                    break;
+                }
+            case RewardAdResult.Closed:
+                {
+                    AdsText.text = "Ad closed";
+                    break;
+                }
+        }
+    }
+}
