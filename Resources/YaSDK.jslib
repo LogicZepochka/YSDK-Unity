@@ -73,7 +73,12 @@ mergeInto(LibraryManager.library, {
                 if (value) {
                     window.ysdk.feedback.requestReview()
                         .then(({ feedbackSent }) => {
-                            console.log(feedbackSent);
+                            if (feedbackSent) {
+                                window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", 5);
+                            }
+                            else {
+                                window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", 4);
+                            }
                         })
                 } else {
                     console.log(reason)

@@ -123,6 +123,22 @@ public void OnRewardedAdvertShown(RewardedAdResult result)
 YandexSDK.Current.Device
 ```
 
+### Рейтинг ###
+Для запроса оценки у игрока:
+```
+YandexSDK.Current.RateGame()
+```
+После этого вызова, игроку отобразится окно оценки игрока.
+После оценки, будет вызвано событие OnRatingAsk c результатом:
+- _NoAuth_ - игрок не был авторизирован
+- _GameAlreadyRated_ - игрок уже оставлял оценку
+- _ReviewAlreadyRequested_ - запрос уже открыт
+- _ReviewWasRequested_ - игрока уже спрашивали
+- _PlayerRejected_ - игрок отказался оценивать игру
+- _PlayerRated_ - игрок поставил оценку
+- _Unknown_ - ошибка
+
+
 ### События
 ___YandexSDK___
 * _OnPlayerDataChanged_ - данные игрока изменлись
@@ -134,4 +150,4 @@ __YandexAds__
 ***
 ## Скачать ##
 
-Последняя версия: [__0.0.0__](https://github.com/LogicZepochka/YSDK-Unity/releases/tag/Unstable)
+Последняя версия: [__0.0.1__](https://github.com/LogicZepochka/YSDK-Unity/releases/tag/Unstable)

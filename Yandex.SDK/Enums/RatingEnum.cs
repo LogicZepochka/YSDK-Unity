@@ -1,8 +1,10 @@
 ﻿public enum RatingResult
 {
     NoAuth,
-    GameRated,
+    GameAlreadyRated,
     ReviewAlreadyRequested,
     ReviewWasRequested,
+    PlayerRejected,
+    PlayerRated,
     Unknown
 }
