@@ -90,4 +90,9 @@ public class DemoScript : MonoBehaviour
                 }
         }
     }
+
+    public void RateGame()
+    {
+        YandexSDK.Current.RateGame();
+    }
 }
