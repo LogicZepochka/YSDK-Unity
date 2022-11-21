@@ -40,7 +40,7 @@ public class DemoScript : MonoBehaviour
     public void ShowAd()
     {
         YandexSDK.Current.Ads.ShowClassicAd(OnAdvertShown);
-    }
+    }   
 
     public void ShowRewardedAd()
     {
@@ -69,21 +69,21 @@ public class DemoScript : MonoBehaviour
         }
     }
 
-    public void OnRewardedAdvertShown(RewardAdResult result)
+    public void OnRewardedAdvertShown(RewardedAdResult result)
     {
         switch (result)
         {
-            case RewardAdResult.Rewarded:
+            case RewardedAdResult.Rewarded:
                 {
                     AdsText.text = "Ad rewarded";
                     break;
                 }
-            case RewardAdResult.Error:
+            case RewardedAdResult.Error:
                 {
                     AdsText.text = "Ad ERROR";
                     break;
                 }
-            case RewardAdResult.Closed:
+            case RewardedAdResult.Closed:
                 {
                     AdsText.text = "Ad closed";
                     break;

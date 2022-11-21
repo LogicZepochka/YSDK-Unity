@@ -13,7 +13,7 @@ public class YandexAds: MonoBehaviour
     [Header("UnityEvent on Classic Ads")]
     public UnityEvent<AdResult> OnAdvertShown;
     [Header("UnityEvent on Reward Ads")]
-    public UnityEvent<RewardAdResult> OnRewardAdvertShown;
+    public UnityEvent<RewardedAdResult> OnRewardAdvertShown;
 
     [DllImport("__Internal")]
     private static extern int ShowAdvert();
@@ -30,8 +30,8 @@ public class YandexAds: MonoBehaviour
 
     public void ReciveRewardAdResult(int resultID)
     {
-        RewardAdResult result = RewardAdResult.Error;
-        result = (RewardAdResult)resultID;
+        RewardedAdResult result = RewardedAdResult.Error;
+        result = (RewardedAdResult)resultID;
         OnRewardAdvertShown?.Invoke(result);
         OnRewardAdvertShown?.RemoveAllListeners();
     }
@@ -42,9 +42,19 @@ public class YandexAds: MonoBehaviour
         ShowAdvert();
     }
 
-    public void ShowRewardedAd(UnityAction<RewardAdResult> rewardCallback)
+    public void ShowClassicAd()
+    {
+        ShowAdvert();
+    }
+
+    public void ShowRewardedAd(UnityAction<RewardedAdResult> rewardCallback)
     {
         OnRewardAdvertShown?.AddListener(rewardCallback);
         ShowRewardAdvert();
-    }   
+    }
+
+    public void ShowRewardedAd()
+    {   
+        ShowRewardAdvert();
+    }
 }

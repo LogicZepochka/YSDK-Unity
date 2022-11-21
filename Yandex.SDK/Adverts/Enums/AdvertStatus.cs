@@ -11,7 +11,7 @@ public enum AdResult {
     Offline
 }
 
-public enum RewardAdResult
+public enum RewardedAdResult
 {
     Rewarded,
     Closed,
