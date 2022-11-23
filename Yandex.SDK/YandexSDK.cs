@@ -12,12 +12,14 @@ public enum YaDevice
 }
 
 [RequireComponent(typeof(YandexAds))]
+[RequireComponent(typeof(YandexLeaderboard))]
 public class YandexSDK : MonoBehaviour
 {
     public static YandexSDK Current => _instance;
     public YaPlayer Player;
     public YaDevice Device => _device;
     public YandexAds Ads => _ads;
+    public YandexLeaderboard Leaderboards => _leaderboard;
 
     private static YandexSDK _instance;
     private YaDevice _device;
@@ -27,6 +29,7 @@ public class YandexSDK : MonoBehaviour
     public UnityEvent<RatingResult> OnRatingAsk;
 
     private YandexAds _ads;
+    private YandexLeaderboard _leaderboard;
 
     [DllImport("__Internal")] 
     private static extern void GetPlayerData();
@@ -43,16 +46,17 @@ public class YandexSDK : MonoBehaviour
     private void Start()
     {
 
-        Debug.Log("Yandex SDK v0.0.0.1 starting...");
+        Debug.Log("Yandex SDK v0.0.2.0 starting...");
         if (Debug.isDebugBuild)
         {
             Debug.developerConsoleVisible = true;
         }
         if (_instance == null)
         {
-            Debug.Log("Yandex SDK v0.0.0.1 initialized");
+            Debug.Log("Yandex SDK v0.0.2.0 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
+            _leaderboard = GetComponent<YandexLeaderboard>();
             Debug.Log("Yandex ADS loaded    ");
             DontDestroyOnLoad(gameObject);
             DebugLog("Getting device info");

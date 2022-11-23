@@ -94,6 +94,37 @@ mergeInto(LibraryManager.library, {
             });
     },
 
+    AskLeaderboardDescription: function (rawNameStr) {
+        var name = UTF8ToString(rawNameStr);
+        console.log("YSDKjslb: Received ASK from unity. Description of LB named " + name);
+        window.ysdk.getLeaderboards()
+            .then(lb => {
+                console.log(lb);
+                console.log("YSDKjslb: ysdk received answer, asking description for " + name);
+                lb.getLeaderboardDescription(name)
+                    .then(res => {
+                        console.log("YSDKjslb: We have description now, sending json to unity...");
+                        var json = JSON.stringify(res);
+                        console.log("Sending: " + json);
+                        window.unityInstance.SendMessage("YaSDK", "ReceiveLeaderboardDescription", json);
+                    });
+            });
+    },
+
+    AskLeaderboardAvailable: function () {
+        window.ysdk.isAvailableMethod('leaderboards.setLeaderboardScore').
+            then(res => {
+                window.unityInstance.SendMessage("YaSDK", "ReceiveLeaderboardAvailable", res);
+            });
+    },
+
+    AskSetLeaderboardScore: function (name,value) {
+        window.ysdk.getLeaderboards()
+            .then(lb => {
+                lb.setLeaderboardScore(name, value);
+            });
+    },
+
     ShowAdvert: function () {
         window.ysdk.adv.showFullscreenAdv({
             callbacks: {
