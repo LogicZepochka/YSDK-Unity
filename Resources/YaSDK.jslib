@@ -5,28 +5,44 @@ mergeInto(LibraryManager.library, {
     },
 
     GetPlayerData: function () {
+        var playerJson;
         console.log("Getting info from YSDK");
         try {
             if (window.player.getMode() === 'lite') {
                 // Игрок не авторизован.
                 window.ysdk.auth.openAuthDialog().then(() => {
-                    console.log("Sending info");
-                    window.unityInstance.SendMessage("YaSDK", "SetupName", window.player.getName());
-                    window.unityInstance.SendMessage("YaSDK", "SetupImgUrl", window.player.getPhoto("small"));
-                    window.unityInstance.SendMessage("YaSDK", "SetupUID", window.player.getUniqueID());
+                    playerJson = {
+                        "uID": window.player.getUniqueID(),
+                        "name": window.player.getName(),
+                        "auth": true,
+                        "smallPhoto": window.player.getPhoto("small"),
+                        "mediumPhoto": window.player.getPhoto("medium"),
+                        "largePhoto": window.player.getPhoto("large")
+                    };
                 }).catch(() => {
-                    console.log("Sending info with nulls");
-                    window.unityInstance.SendMessage("YaSDK", "SetupName", window.player.getName());
-                    window.unityInstance.SendMessage("YaSDK", "SetupImgUrl", window.player.getPhoto("small"));
-                    window.unityInstance.SendMessage("YaSDK", "SetupUID", window.player.getUniqueID());
+                    playerJson = {
+                        "uID": window.player.getUniqueID(),
+                        "name": "Guest" + Math.floor(Math.random() * 500000),
+                        "auth": false,
+                        "smallPhoto": window.player.getPhoto("small"),
+                        "mediumPhoto": window.player.getPhoto("medium"),
+                        "largePhoto": window.player.getPhoto("large")
+                    };
                 });
             }
             else {
                 console.log("Sending info");
-                window.unityInstance.SendMessage("YaSDK", "SetupName", window.player.getName());
-                window.unityInstance.SendMessage("YaSDK", "SetupImgUrl", window.player.getPhoto("small"));
-                window.unityInstance.SendMessage("YaSDK", "SetupUID", window.player.getUniqueID());
+                playerJson = {
+                    "uID": window.player.getUniqueID(),
+                    "name": window.player.getName(),
+                    "isAuth": true,
+                    "smallPhoto": window.player.getPhoto("small"),
+                    "mediumPhoto": window.player.getPhoto("medium"),
+                    "largePhoto": window.player.getPhoto("large")
+                };
             }
+            console.log(JSON.stringify(playerJson));
+            window.unityInstance.SendMessage("YaSDK", "ReceivePlayerData", JSON.stringify(playerJson));
         }   
         catch (e) {
             console.error(e);

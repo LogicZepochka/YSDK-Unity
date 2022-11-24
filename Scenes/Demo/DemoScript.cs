@@ -15,8 +15,13 @@ public class DemoScript : MonoBehaviour
 
     public void OnPlayerDataUpdated(YaPlayer player)
     {
+        Debug.Log("Checking YaPlayer parsing...");
+        Debug.Log(player.Name);
+        Debug.Log(player.UID);
+        Debug.Log(player.SmallPhotoURL);
+        Debug.Log("Checking YaPlayer Finish");
         PlayerName.text = player.Name;
-        PlayerImage.LoadURLImage(player.ImageURL);
+        PlayerImage.LoadURLImage(player.SmallPhotoURL);
     }
 
     public void UpdateDeviceData()

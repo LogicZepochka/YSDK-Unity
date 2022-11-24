@@ -43,14 +43,14 @@ public class YandexSDK : MonoBehaviour
     private void Start()
     {
 
-        Debug.Log("Yandex SDK v0.0.0.1 starting...");
+        Debug.Log("Yandex SDK v0.0.1.2 starting...");
         if (Debug.isDebugBuild)
         {
             Debug.developerConsoleVisible = true;
         }
         if (_instance == null)
         {
-            Debug.Log("Yandex SDK v0.0.0.1 initialized");
+            Debug.Log("Yandex SDK v0.0.1.2 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
             Debug.Log("Yandex ADS loaded    ");
@@ -72,24 +72,13 @@ public class YandexSDK : MonoBehaviour
         GetPlayerData();
     }
 
-    public void SetupName(string name)
+    public void ReceivePlayerData(string json)
     {
-        _player.SetName(name);
+        Debug.Log("Recieved json from js:");
+        Debug.Log(json);
+        _player = JsonUtility.FromJson<YaPlayer>(json);
         OnPlayerDataChanged?.Invoke(_player);
     }
-
-    public void SetupImgUrl(string url)
-    {
-        _player.SetImgUrl(url);
-        OnPlayerDataChanged?.Invoke(_player);
-    }
-
-    public void SetupUID(string uid)
-    {
-        _player.SetUID(uid);
-        OnPlayerDataChanged?.Invoke(_player);
-    }
-
 
     private YaDevice GetDevice()
     {
