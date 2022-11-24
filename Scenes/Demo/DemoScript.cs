@@ -100,4 +100,16 @@ public class DemoScript : MonoBehaviour
     {
         YandexSDK.Current.RateGame();
     }
+
+    public void ShowLeaderboardScreen()
+    {
+        YandexSDK.Current.Leaderboards.GetLeaderboardDescription("testleaderboard", OnLeaderboardRecievie);
+    }
+
+    private void OnLeaderboardRecievie(LeaderboardInfo leaderboardInfo)
+    {
+        Debug.Log(leaderboardInfo.title.ru);
+        Debug.Log(leaderboardInfo.appID);
+        Debug.Log(leaderboardInfo.description.score_format.options.decimal_offset);
+    }
 }
