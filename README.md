@@ -17,4 +17,4 @@
 
 ## Скачать ##
 
-Последняя версия: [__1.0.1__](https://github.com/LogicZepochka/YSDK-Unity/releases/)
+Последняя версия: [__1.0.0__](https://github.com/LogicZepochka/YSDK-Unity/releases/)
