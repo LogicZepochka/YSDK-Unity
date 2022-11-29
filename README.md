@@ -9,7 +9,7 @@
 
 ## Установка
 
-1. Скачайте готовый [UnityPackage](https://github.com/LogicZepochka/YSDK-Unity/releases/tag/Unstable) и ипортируйте его в свой проект.
+1. Скачайте готовый [UnityPackage](https://github.com/LogicZepochka/YSDK-Unity/releases/) и ипортируйте его в свой проект.
 2. Добавьте префаб YaSDK на самую первую сцену вашей игры.
 
 # Использование
@@ -150,4 +150,4 @@ __YandexAds__
 ***
 ## Скачать ##
 
-Последняя версия: [__0.0.1__](https://github.com/LogicZepochka/YSDK-Unity/releases/tag/Unstable)
+Последняя версия: [__1.0.0__](https://github.com/LogicZepochka/YSDK-Unity/releases/)
