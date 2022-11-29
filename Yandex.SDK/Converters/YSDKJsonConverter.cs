@@ -4,11 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public static class YSDKJsonConverter
 {
-    public static LeaderboardInfo ConvertToLeaderboardInfo(string json)
+
+    /// <summary>
+    /// Convert JSON to LeaderboardInfo
+    /// </summary>
+    /// <param name="json"></param>
+    /// <returns>Leaderboard description</returns>
+    public static LeaderboardDescription ConvertToLeaderboardDescription(string json)
     {
-        return JsonUtility.FromJson<LeaderboardInfo>(json);
-    } 
+        return JsonUtility.FromJson<LeaderboardDescription>(json);
+    }
+
+    /// <summary>
+    /// Convert JSON to Leaderboard Data
+    /// </summary>
+    /// <param name="json"></param>
+    /// <returns>Leaderboard rating</returns>
+    public static LeaderboardData ConvertToLeaderboardData(string json)
+    {
+        return JsonUtility.FromJson<LeaderboardData>(json);
+    }
 }

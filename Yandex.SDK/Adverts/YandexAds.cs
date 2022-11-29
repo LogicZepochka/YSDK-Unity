@@ -20,7 +20,11 @@ public class YandexAds: MonoBehaviour
     [DllImport("__Internal")]
     private static extern int ShowRewardAdvert();
 
-    public void ReciveAdvertResult(int resultID)
+    /// <summary>
+    /// WebGL callback to get Yandex Ad result
+    /// </summary>
+    /// <param name="resultID">Result Code</param>
+    public void YSCB_AdvertResult(int resultID)
     {
         AdResult result = AdResult.Error;
         result = (AdResult)resultID;
@@ -28,7 +32,11 @@ public class YandexAds: MonoBehaviour
         OnAdvertShown?.RemoveAllListeners();
     }
 
-    public void ReciveRewardAdResult(int resultID)
+    /// <summary>
+    /// WebGL callback to get Yandex Rewarded Ad result
+    /// </summary>
+    /// <param name="resultID">Result Code</param>
+    public void YSCB_RewardAdResult(int resultID)
     {
         RewardedAdResult result = RewardedAdResult.Error;
         result = (RewardedAdResult)resultID;
@@ -36,25 +44,33 @@ public class YandexAds: MonoBehaviour
         OnRewardAdvertShown?.RemoveAllListeners();
     }
 
+
+    /// <summary>
+    /// Show standard ads that the user can close
+    /// </summary>
+    /// <param name="callback">Сallback to be called after showing</param>
     public void ShowClassicAd(UnityAction<AdResult> callback)
     {
         OnAdvertShown?.AddListener(callback);
         ShowAdvert();
     }
 
+
+    /// <summary>
+    /// Show standard ads that the user can close
+    /// </summary>
     public void ShowClassicAd()
     {
         ShowAdvert();
     }
 
+    /// <summary>
+    /// Show rewarded ads that the user can't close
+    /// </summary>
+    /// <param name="rewardCallback">Callback after the ad has finished showing</param>
     public void ShowRewardedAd(UnityAction<RewardedAdResult> rewardCallback)
     {
         OnRewardAdvertShown?.AddListener(rewardCallback);
-        ShowRewardAdvert();
-    }
-
-    public void ShowRewardedAd()
-    {   
         ShowRewardAdvert();
     }
 }

@@ -32,7 +32,7 @@ public class Options
 }
 
 [Serializable]
-public class LeaderboardInfo
+public class LeaderboardDescription
 {
     public int appID;
     public string name;

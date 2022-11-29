@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RawImage))]
+
 public class PlayerURLImage : MonoBehaviour
 {
     [SerializeField]

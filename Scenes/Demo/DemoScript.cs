@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class DemoScript : MonoBehaviour
 {
@@ -106,10 +107,36 @@ public class DemoScript : MonoBehaviour
         YandexSDK.Current.Leaderboards.GetLeaderboardDescription("testleaderboard", OnLeaderboardRecievie);
     }
 
-    private void OnLeaderboardRecievie(LeaderboardInfo leaderboardInfo)
+    private void OnLeaderboardRecievie(LeaderboardDescription leaderboardInfo)
     {
         Debug.Log(leaderboardInfo.title.ru);
         Debug.Log(leaderboardInfo.appID);
         Debug.Log(leaderboardInfo.description.score_format.options.decimal_offset);
     }
+
+    public void AskPlayerRating()
+    {
+        YandexSDK.Current.Leaderboards.GetLeaderboardRating("testleaderboard",OnLeaderboardRatingReceive);
+    }
+
+    public void SetLBScore()
+    {
+        YandexSDK.Current.Leaderboards.SetLeaderboardScore("testleaderboard", 125);
+    }
+
+    private void OnLeaderboardRatingReceive(LeaderboardRatingStatus status, LeaderboardEntry info)
+    {
+        Debug.Log($"Player rank: {info.score}");
+        Debug.Log($"Player score: {info.score}");   
+        if (status == LeaderboardRatingStatus.PlayerNotPresent)
+        {
+            Debug.Log("RESULT: Player is not present");
+        }
+        else
+        {
+            Debug.Log($"Player rank: {info.score}");
+            Debug.Log($"Player score: {info.score}");
+        }
+    }
+
 }

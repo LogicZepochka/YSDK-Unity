@@ -42,8 +42,8 @@ mergeInto(LibraryManager.library, {
                 };
             }
             console.log(JSON.stringify(playerJson));
-            window.unityInstance.SendMessage("YaSDK", "ReceivePlayerData", JSON.stringify(playerJson));
-        }   
+            window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerData", JSON.stringify(playerJson));
+        }
         catch (e) {
             console.error(e);
         }
@@ -61,23 +61,23 @@ mergeInto(LibraryManager.library, {
     },
 
     DebugLog: function (msg) {
-        console.log("UnityGame: " +msg);
+        console.log("UnityGame: " + msg);
     },
 
-    ShowRewardAdvert: function() {
+    ShowRewardAdvert: function () {
         window.ysdk.adv.showRewardedVideo({
             callbacks: {
                 onRewarded: () => {
                     console.log("Showed: Rewarded");
-                    window.unityInstance.SendMessage("YaSDK", "ReciveRewardAdResult", 0);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 0);
                 },
                 onClose: () => {
                     console.log("Showed: Closed");
-                    window.unityInstance.SendMessage("YaSDK", "ReciveRewardAdResult", 1);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 1);
                 },
                 onError: (e) => {
                     console.log("Not Showed: Error");
-                    window.unityInstance.SendMessage("YaSDK", "ReciveRewardAdResult", 2);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 2);
                 }
             }
         })
@@ -90,10 +90,10 @@ mergeInto(LibraryManager.library, {
                     window.ysdk.feedback.requestReview()
                         .then(({ feedbackSent }) => {
                             if (feedbackSent) {
-                                window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", 5);
+                                window.unityInstance.SendMessage("YaSDK", "YSCB_AskForRatingCallback", 5);
                             }
                             else {
-                                window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", 4);
+                                window.unityInstance.SendMessage("YaSDK", "YSCB_AskForRatingCallback", 4);
                             }
                         })
                 } else {
@@ -105,7 +105,7 @@ mergeInto(LibraryManager.library, {
                         case "REVIEW_ALREADY_REQUESTED": { callbackCode = 2; break; }
                         case "REVIEW_WAS_REQUESTED": { callbackCode = 3; break; }
                     }
-                    window.unityInstance.SendMessage("YaSDK", "AskForRatingCallback", callbackCode);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_AskForRatingCallback", callbackCode);
                 }
             });
     },
@@ -122,7 +122,7 @@ mergeInto(LibraryManager.library, {
                         console.log("YSDKjslb: We have description now, sending json to unity...");
                         var json = JSON.stringify(res);
                         console.log("Sending: " + json);
-                        window.unityInstance.SendMessage("YaSDK", "ReceiveLeaderboardDescription", json);
+                        window.unityInstance.SendMessage("YaSDK", "YSCB_ReceiveLeaderboardDescription", json);
                     });
             });
     },
@@ -130,16 +130,73 @@ mergeInto(LibraryManager.library, {
     AskLeaderboardAvailable: function () {
         window.ysdk.isAvailableMethod('leaderboards.setLeaderboardScore').
             then(res => {
-                window.unityInstance.SendMessage("YaSDK", "ReceiveLeaderboardAvailable", res);
+                window.unityInstance.SendMessage("YaSDK", "YSCB_ReceiveLeaderboardAvailable", res);
             });
     },
 
-    AskSetLeaderboardScore: function (name,value) {
+    AskSetLeaderboardScore: function (rawNameStr, value) {
+        var lbname = UTF8ToString(rawNameStr);
         window.ysdk.getLeaderboards()
             .then(lb => {
-                lb.setLeaderboardScore(name, value);
+                lb.setLeaderboardScore(lbname, value);
             });
     },
+
+    AskPlayerLeaderboardRating: function (rawNameStr) {
+        var lbname = UTF8ToString(rawNameStr);
+        console.log(lbname);
+        window.ysdk.getLeaderboards()
+            .then(lb => lb.getLeaderboardPlayerEntry(lbname))
+            .then(res => {
+                var json = {
+                    "playerName": res.player.publicName,
+                    "imageURL": res.player.getAvatarSrc("small"),
+                    "rank": res.rank,
+                    "score": res.score
+                };
+                console.log(JSON.stringify(json));
+                window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", JSON.stringify(json));
+            })
+            .catch(err => {
+                if (err.code === 'LEADERBOARD_PLAYER_NOT_PRESENT') {
+                    console.log("LEADERBOARD_PLAYER_NOT_PRESENT detected");
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", res);
+                }
+                else {
+                    console.log(err);
+                }
+            });
+    },
+
+    RequestLeaderboard: function (rawNameStr, includeUser, quantityAround, quantityTop) {
+        var lbname = UTF8ToString(rawNameStr);
+        ysdk.getLeaderboards()
+            .then(lb => {
+                lb.getLeaderboardEntries(lbname, { quantityTop: quantityTop, includeUser: includeUser, quantityAround: quantityAround })
+                    .then(res => {
+                        var lbAnswer = {
+                            "lbName_ru": res.leaderboard.title.ru,
+                            "lbName_en": res.leaderboard.title.en,
+                            "playerRank": res.userRank,
+                            "entries": []
+                        };
+                        var lbEntries = [];
+                        res.entries.forEach(line => {
+                            var entry = {
+                                "playerName": line.player.publicName,
+                                "imageURL": line.player.getAvatarSrc('small'),
+                                "rank": line.line,
+                                "score": line.score
+                            };
+                            lbEntries.push(entry);
+                        });
+                        lbAnswer.entries = lbEntries;
+                        console.log(JSON.stringify(lbAnswer)); 
+                        window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardDataCallback", JSON.stringify(lbAnswer));
+                    });
+            });
+    },
+        
 
     ShowAdvert: function () {
         window.ysdk.adv.showFullscreenAdv({
@@ -147,20 +204,20 @@ mergeInto(LibraryManager.library, {
                 onClose: function (wasShown) {
                     if (wasShown) {
                         console.log("Showed: Delayed");
-                        window.unityInstance.SendMessage("YaSDK", "ReciveAdvertResult", 1);
+                        window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 1);
                     }
                     else {
                         console.log("Showed: Success");
-                        window.unityInstance.SendMessage("YaSDK", "ReciveAdvertResult", 0);
+                        window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 0);
                     }
                 },
                 onError: function (error) {
                     console.log("Not Showed: Error");
-                    window.unityInstance.SendMessage("YaSDK", "ReciveAdvertResult", 2);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 2);
                 },
                 onOffline: function () {
                     console.log("Not Showed: Offline");
-                    window.unityInstance.SendMessage("YaSDK", "ReciveAdvertResult", 3);
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 3);
                 }
             }
         });
