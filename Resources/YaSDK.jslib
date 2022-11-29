@@ -1,12 +1,7 @@
 mergeInto(LibraryManager.library, {
 
-    Check: function () {
-        window.alert("Hello, world!");
-    },
-
     GetPlayerData: function () {
         var playerJson;
-        console.log("Getting info from YSDK");
         try {
             if (window.player.getMode() === 'lite') {
                 // Игрок не авторизован.
@@ -31,7 +26,6 @@ mergeInto(LibraryManager.library, {
                 });
             }
             else {
-                console.log("Sending info");
                 playerJson = {
                     "uID": window.player.getUniqueID(),
                     "name": window.player.getName(),
@@ -41,13 +35,11 @@ mergeInto(LibraryManager.library, {
                     "largePhoto": window.player.getPhoto("large")
                 };
             }
-            console.log(JSON.stringify(playerJson));
             window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerData", JSON.stringify(playerJson));
         }
         catch (e) {
             console.error(e);
         }
-        console.log("Finish");
     },
 
     GetDeviceID: function () {
@@ -68,15 +60,12 @@ mergeInto(LibraryManager.library, {
         window.ysdk.adv.showRewardedVideo({
             callbacks: {
                 onRewarded: () => {
-                    console.log("Showed: Rewarded");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 0);
                 },
                 onClose: () => {
-                    console.log("Showed: Closed");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 1);
                 },
                 onError: (e) => {
-                    console.log("Not Showed: Error");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_RewardAdResult", 2);
                 }
             }
@@ -97,7 +86,6 @@ mergeInto(LibraryManager.library, {
                             }
                         })
                 } else {
-                    console.log(reason)
                     var callbackCode = 4;
                     switch (reason) {
                         case "NO_AUTH": { callbackCode = 0; break; }
@@ -112,16 +100,11 @@ mergeInto(LibraryManager.library, {
 
     AskLeaderboardDescription: function (rawNameStr) {
         var name = UTF8ToString(rawNameStr);
-        console.log("YSDKjslb: Received ASK from unity. Description of LB named " + name);
         window.ysdk.getLeaderboards()
             .then(lb => {
-                console.log(lb);
-                console.log("YSDKjslb: ysdk received answer, asking description for " + name);
                 lb.getLeaderboardDescription(name)
                     .then(res => {
-                        console.log("YSDKjslb: We have description now, sending json to unity...");
                         var json = JSON.stringify(res);
-                        console.log("Sending: " + json);
                         window.unityInstance.SendMessage("YaSDK", "YSCB_ReceiveLeaderboardDescription", json);
                     });
             });
@@ -154,12 +137,10 @@ mergeInto(LibraryManager.library, {
                     "rank": res.rank,
                     "score": res.score
                 };
-                console.log(JSON.stringify(json));
                 window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", JSON.stringify(json));
             })
             .catch(err => {
                 if (err.code === 'LEADERBOARD_PLAYER_NOT_PRESENT') {
-                    console.log("LEADERBOARD_PLAYER_NOT_PRESENT detected");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", res);
                 }
                 else {
@@ -191,7 +172,6 @@ mergeInto(LibraryManager.library, {
                             lbEntries.push(entry);
                         });
                         lbAnswer.entries = lbEntries;
-                        console.log(JSON.stringify(lbAnswer)); 
                         window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardDataCallback", JSON.stringify(lbAnswer));
                     });
             });
@@ -203,20 +183,16 @@ mergeInto(LibraryManager.library, {
             callbacks: {
                 onClose: function (wasShown) {
                     if (wasShown) {
-                        console.log("Showed: Delayed");
                         window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 1);
                     }
                     else {
-                        console.log("Showed: Success");
                         window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 0);
                     }
                 },
                 onError: function (error) {
-                    console.log("Not Showed: Error");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 2);
                 },
                 onOffline: function () {
-                    console.log("Not Showed: Offline");
                     window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 3);
                 }
             }

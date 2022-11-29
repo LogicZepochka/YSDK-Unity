@@ -29,21 +29,18 @@ public class YandexLeaderboard : MonoBehaviour
 
     public void GetLeaderboardDescription(string name, UnityAction<LeaderboardDescription> callback)
     {
-        Debug.Log("YSDK: Asking LD Description");
         OnLeaderboardDescriptionReceived.AddListener(callback);
         AskLeaderboardDescription(name);
     }
 
     public void IsLeaderboardAddScoreAvailable(UnityAction<bool> callback)
     {
-        Debug.Log("YSDK: Asking LD available");
         OnLeaderboardAvailableReceived?.AddListener(callback);
         AskLeaderboardAvailable();
     }
 
     public void YSCB_ReceiveLeaderboardDescription(string desc)
     {
-        Debug.Log("YSDK: Received LD Description");
         LeaderboardDescription info = YSDKJsonConverter.ConvertToLeaderboardDescription(desc);
         OnLeaderboardDescriptionReceived?.Invoke(info);
         OnLeaderboardDescriptionReceived?.RemoveAllListeners();
@@ -51,7 +48,6 @@ public class YandexLeaderboard : MonoBehaviour
 
     public void YSCB_ReceiveLeaderboardAvailable(bool available)
     {
-        Debug.Log("YSDK: Received LD Available");
         OnLeaderboardAvailableReceived?.Invoke(available);
         OnLeaderboardAvailableReceived?.RemoveAllListeners();
     }
@@ -69,17 +65,13 @@ public class YandexLeaderboard : MonoBehaviour
 
     public void YSCB_LeaderboardRatingCallback(string json)
     {
-        Debug.Log("LeaderboardRatingCallback called!");
         if (json == "LEADERBOARD_PLAYER_NOT_PRESENT")
         {
             Debug.Log("Error code: LEADERBOARD_PLAYER_NOT_PRESENT");
             OnLeaderboardRatingReceived?.Invoke(LeaderboardRatingStatus.PlayerNotPresent, null);
             return;
         }
-        Debug.Log("Parsing LB Rating...");
         LeaderboardEntry leaderboardInfo = JsonUtility.FromJson<LeaderboardEntry>(json);
-        Debug.Log($"Parsed! Rank: {leaderboardInfo.score}, Score: {leaderboardInfo.score}");
-        Debug.Log("Sending to caller...");
         OnLeaderboardRatingReceived?.Invoke(LeaderboardRatingStatus.OK, leaderboardInfo);
         OnLeaderboardRatingReceived?.RemoveAllListeners();
     }

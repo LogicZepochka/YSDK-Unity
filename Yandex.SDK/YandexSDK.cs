@@ -63,24 +63,18 @@ public class YandexSDK : MonoBehaviour
 
     private void Start()
     {
-
-        Debug.Log("Yandex SDK v0.0.2.2 starting...");
-
         if (Debug.isDebugBuild)
         {
             Debug.developerConsoleVisible = true;
         }
         if (_instance == null)
         {
-            Debug.Log("Yandex SDK v0.0.2.2 initialized");
+            Debug.Log("Yandex SDK v1.0.0 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
             _leaderboard = GetComponent<YandexLeaderboard>();
-            Debug.Log("Yandex ADS loaded    ");
             DontDestroyOnLoad(gameObject);
-            DebugLog("Getting device info");
             _device = GetDevice();
-            DebugLog("DeviceInfo stored");
         }
     }
 
@@ -99,8 +93,6 @@ public class YandexSDK : MonoBehaviour
     /// <param name="json">PlayerData</param>
     public void YSCB_ReceivePlayerData(string json)
     {
-        Debug.Log("Recieved json from js:");
-        Debug.Log(json);
         _player = JsonUtility.FromJson<YaPlayer>(json);
         OnPlayerDataChanged?.Invoke(_player);
     }
@@ -109,9 +101,7 @@ public class YandexSDK : MonoBehaviour
     private YaDevice GetDevice()
     {
         int deviceID = GetDeviceID();
-        DebugLog($"Device get - {deviceID}");
         YaDevice device = (YaDevice)deviceID;
-        DebugLog($"parsing - {device.ToString()}");
         return (YaDevice)deviceID;
     }
 
