@@ -36,7 +36,7 @@ public class YandexAds: MonoBehaviour
     /// WebGL callback to get Yandex Rewarded Ad result
     /// </summary>
     /// <param name="resultID">Result Code</param>
-    public void YSCB_RewardAdResult(int resultID)
+    public void YSCB_RatedResult(int resultID)
     {
         RewardedAdResult result = RewardedAdResult.Error;
         result = (RewardedAdResult)resultID;

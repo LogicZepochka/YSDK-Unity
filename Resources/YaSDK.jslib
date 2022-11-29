@@ -90,10 +90,10 @@ mergeInto(LibraryManager.library, {
                     window.ysdk.feedback.requestReview()
                         .then(({ feedbackSent }) => {
                             if (feedbackSent) {
-                                window.unityInstance.SendMessage("YaSDK", "YSCB_AskForRatingCallback", 5);
+                                window.unityInstance.SendMessage("YaSDK", "YSCB_RatedResult", 5);
                             }
                             else {
-                                window.unityInstance.SendMessage("YaSDK", "YSCB_AskForRatingCallback", 4);
+                                window.unityInstance.SendMessage("YaSDK", "YSCB_RatedResult", 4);
                             }
                         })
                 } else {
