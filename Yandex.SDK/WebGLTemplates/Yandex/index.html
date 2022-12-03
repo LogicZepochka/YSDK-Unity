@@ -8,28 +8,21 @@
 </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
       <script>
-
-          var player;
-
-          var myGameInstance = null;
-
-          var ysdk;
-
-
-          YaGames.init().then(ysdkm => {
-              window.ysdk = ysdkm;
-              ysdk = ysdkm;
-              window.deviceType = ysdk.deviceInfo.type;
-              console.log(window.deviceType);
-              initPlayer();
-          });
-
           function initPlayer() {
               return window.ysdk.getPlayer().then(_player => {
                   window.player = _player;
                   return player;
               });
           };
+
+          YaGames.init().then(ysdkm => {
+
+              window.ysdk = ysdkm;
+              window.deviceType = ysdk.deviceInfo.type;
+              console.log(window.deviceType);
+              initPlayer();
+              console.log("YSDK init finished");
+          });
       </script>
     <canvas id="unity-canvas" width=960 height=600 style="width: 100%; height: 100%; background: #231F20"></canvas>
     <script src="Build/htdocs.loader.js"></script>

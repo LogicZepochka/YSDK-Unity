@@ -5,14 +5,13 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
+[HideInInspector]
 public class YandexLeaderboard : MonoBehaviour
 {
-
-
-    private UnityEvent<LeaderboardDescription> OnLeaderboardDescriptionReceived;
-    private UnityEvent<bool> OnLeaderboardAvailableReceived;
-    private UnityEvent<LeaderboardRatingStatus, LeaderboardEntry> OnLeaderboardRatingReceived;
-    private UnityEvent<LeaderboardData> OnLeaderboardDataReceived;
+    public UnityEvent<LeaderboardDescription> OnLeaderboardDescriptionReceived;
+    public UnityEvent<bool> OnLeaderboardAvailableReceived;
+    public UnityEvent<LeaderboardRatingStatus, LeaderboardEntry> OnLeaderboardRatingReceived;
+    public UnityEvent<LeaderboardData> OnLeaderboardDataReceived;
 
     [DllImport("__Internal")]
     private static extern void AskLeaderboardDescription(string name);

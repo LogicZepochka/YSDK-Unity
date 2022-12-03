@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [CustomEditor(typeof(YandexSDK))]
-public class YandexSDKEditor : Editor
+public class YandexSDKCustomEditors : Editor
 {
 
     Texture banner;
@@ -19,9 +19,10 @@ public class YandexSDKEditor : Editor
     {
         
         GUILayout.Label(banner);
-        CheckFirstScene();
-
-
+        if(CheckFirstScene())
+        {
+            base.OnInspectorGUI();
+        }
         GUILayout.Space(30);
         if(GUILayout.Button("Documentation"))
         {
@@ -33,7 +34,7 @@ public class YandexSDKEditor : Editor
         }
     }
 
-    private void CheckFirstScene()
+    private bool CheckFirstScene()
     {
         GUILayout.BeginHorizontal();
         GUILayout.Label("Object placement");
@@ -42,11 +43,13 @@ public class YandexSDKEditor : Editor
             GUILayout.Label(EditorGUIUtility.IconContent("d_Invalid"));
             GUILayout.EndHorizontal();
             GUILayout.TextArea("Prefab must be placed on the first scene of your project", GUI.skin.GetStyle("HelpBox"));
+            return false;
         }
         else
         {
             GUILayout.Label(EditorGUIUtility.IconContent("Installed"));
             GUILayout.EndHorizontal();
+            return true;
         }
         
     }

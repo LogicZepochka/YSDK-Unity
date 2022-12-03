@@ -22,6 +22,50 @@ public class DemoScript : MonoBehaviour
         PlayerImage.LoadURLImage(player.SmallPhotoURL);
     }
 
+    public void Start()
+    {
+        YandexSDK.Current.OnPlayerDataChanged.AddListener(OnPlayerDataUpdated);
+    }
+
+    public void UpdatePlayerData()
+    {
+        YandexSDK.Current.SetupPlayer();
+    }
+
+    public void ToggleStickyBanner()
+    {
+        YandexSDK.Current.Ads.GetStickyBannerStatus(StickyBannerResult);
+    }
+
+    private void StickyBannerResult(StickyBannerStatus status)
+    {
+        Debug.Log("Recieved " + status.ToString());
+        switch (status)
+        {
+            case StickyBannerStatus.AdvIsNotConnected:
+                {
+                    Debug.LogError("StickyBanner is not enabled!");
+                    break;
+                }
+            case StickyBannerStatus.NotShowing:
+                {
+                    YandexSDK.Current.Ads.ShowStickyBanner();
+                    break;
+                }
+            case StickyBannerStatus.Showing:
+                {
+                    YandexSDK.Current.Ads.HideStickyBanner();
+                    break;
+                }
+            case StickyBannerStatus.Unknown:
+            default:
+                {
+                    Debug.LogError("Unknown error detected");
+                    break;
+                }
+        }
+    }
+
     public void UpdateDeviceData()
     {
         string result;
@@ -118,7 +162,7 @@ public class DemoScript : MonoBehaviour
 
     public void SetLBScore()
     {
-        YandexSDK.Current.Leaderboards.SetLeaderboardScore("testleaderboard", 125);
+        YandexSDK.Current.Leaderboards.SetLeaderboardScore("testleaderboard", 175);
     }
 
     private void OnLeaderboardRatingReceive(LeaderboardRatingStatus status, LeaderboardEntry info)

@@ -6,6 +6,7 @@ mergeInto(LibraryManager.library, {
             if (window.player.getMode() === 'lite') {
                 // Игрок не авторизован.
                 window.ysdk.auth.openAuthDialog().then(() => {
+                    console.warn("Player Login Succes Check Send Data");
                     playerJson = {
                         "uID": window.player.getUniqueID(),
                         "name": window.player.getName(),
@@ -15,6 +16,7 @@ mergeInto(LibraryManager.library, {
                         "largePhoto": window.player.getPhoto("large")
                     };
                 }).catch(() => {
+                    console.warn("Player NotLogin Check Send Data");
                     playerJson = {
                         "uID": window.player.getUniqueID(),
                         "name": "Guest" + Math.floor(Math.random() * 500000),
@@ -35,6 +37,7 @@ mergeInto(LibraryManager.library, {
                     "largePhoto": window.player.getPhoto("large")
                 };
             }
+            console.warn("Player Login Check Send Data");
             window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerData", JSON.stringify(playerJson));
         }
         catch (e) {
@@ -180,26 +183,41 @@ mergeInto(LibraryManager.library, {
     RequestBannerStatus: function () {
         window.ysdk.adv.getBannerAdvStatus().then(({ stickyAdvIsShowing, reason }) => {
             if (stickyAdvIsShowing) {
-                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 0);
+                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 1);
             } else if (reason) {
-                if (resason == "ADV_IS_NOT_CONNECTED ") {
+                console.error("StickyBanner error - " + reason);
+                if (reason == "ADV_IS_NOT_CONNECTED ") {
                     window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 2);
                 }
                 else {
                     window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 3);
                 }
             } else {
-                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 1);
+                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 0);
             }
         });
     },
 
     ShowBanner: function () {
-        window.ysdk.adv.showBannerAdv();
+        try {
+            console.log("Sticky Banner Showing...");
+            window.ysdk.adv.showBannerAdv();
+            console.log("Sticky Banner Showed...");
+        }
+        catch (e) {
+            console.error(e);
+        }
     },
 
     HideBanner: function () {
-        window.ysdk.adv.hideBannerAdv();
+        try {
+            console.log("Sticky Banner Hiding...");
+            window.ysdk.adv.hideBannerAdv();
+            console.log("Sticky Banner Hided...");
+        }
+        catch(e) {
+            console.error(e);
+        }
     },
         
 

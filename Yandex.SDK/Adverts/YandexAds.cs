@@ -2,26 +2,29 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
 
-
+[HideInInspector]
 public class YandexAds: MonoBehaviour
 {
     [Header("UnityEvent on Classic Ads")]
-    private UnityEvent<AdResult> OnAdvertShown;
+    public UnityEvent<AdResult> OnAdvertShown;
     [Header("UnityEvent on Reward Ads")]
-    private UnityEvent<RewardedAdResult> OnRewardAdvertShown;
-    private UnityEvent<StickyBannerStatus> OnBannerResultRecieved;
+    public UnityEvent<RewardedAdResult> OnRewardAdvertShown;
+    public UnityEvent<StickyBannerStatus> OnBannerResultRecieved;
 
 
     [DllImport("__Internal")]
-    private static extern int ShowBanner();
+    private static extern void ShowBanner();
     [DllImport("__Internal")]
-    private static extern int HideBanner();
+    private static extern void HideBanner();
     [DllImport("__Internal")] 
     private static extern int ShowAdvert();
     [DllImport("__Internal")]
     private static extern int ShowRewardAdvert();
     [DllImport("__Internal")]
     private static extern int RequestBannerStatus();
+
+    public void ShowStickyBanner() => ShowBanner();
+    public void HideStickyBanner() => HideBanner();
 
     /// <summary>
     /// WebGL callback to get Yandex Ad result
@@ -37,6 +40,7 @@ public class YandexAds: MonoBehaviour
 
     public void YSCB_StickyBannerResult(int resultID)
     {
+        Debug.Log($"StickyBanner result is {resultID}");
         StickyBannerStatus result = (StickyBannerStatus)resultID;
         OnBannerResultRecieved?.Invoke(result);
         OnBannerResultRecieved?.RemoveAllListeners();
@@ -46,7 +50,7 @@ public class YandexAds: MonoBehaviour
     /// WebGL callback to get Yandex Rewarded Ad result
     /// </summary>
     /// <param name="resultID">Result Code</param>
-    public void YSCB_RatedResult(int resultID)
+    public void YSCB_RewardAdResult(int resultID)
     {
         RewardedAdResult result = RewardedAdResult.Error;
         result = (RewardedAdResult)resultID;

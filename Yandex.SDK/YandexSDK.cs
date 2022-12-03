@@ -44,8 +44,8 @@ public class YandexSDK : MonoBehaviour
 
     // EVENTS
 
-    private UnityEvent<YaPlayer> OnPlayerDataChanged;
-    private UnityEvent<RatingResult> OnRated;
+    public UnityEvent<YaPlayer> OnPlayerDataChanged;
+    public UnityEvent<RatingResult> OnRated;
 
 
 
@@ -95,6 +95,7 @@ public class YandexSDK : MonoBehaviour
     {
         _player = JsonUtility.FromJson<YaPlayer>(json);
         OnPlayerDataChanged?.Invoke(_player);
+        OnPlayerDataChanged?.RemoveAllListeners();
     }
 
 
