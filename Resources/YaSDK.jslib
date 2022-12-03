@@ -176,6 +176,31 @@ mergeInto(LibraryManager.library, {
                     });
             });
     },
+
+    RequestBannerStatus: function () {
+        window.ysdk.adv.getBannerAdvStatus().then(({ stickyAdvIsShowing, reason }) => {
+            if (stickyAdvIsShowing) {
+                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 0);
+            } else if (reason) {
+                if (resason == "ADV_IS_NOT_CONNECTED ") {
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 2);
+                }
+                else {
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 3);
+                }
+            } else {
+                window.unityInstance.SendMessage("YaSDK", "YSCB_StickyBannerResult", 1);
+            }
+        });
+    },
+
+    ShowBanner: function () {
+        window.ysdk.adv.showBannerAdv();
+    },
+
+    HideBanner: function () {
+        window.ysdk.adv.hideBannerAdv();
+    },
         
 
     ShowAdvert: function () {

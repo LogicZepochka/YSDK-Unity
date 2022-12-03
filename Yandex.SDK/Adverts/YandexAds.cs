@@ -9,11 +9,19 @@ public class YandexAds: MonoBehaviour
     private UnityEvent<AdResult> OnAdvertShown;
     [Header("UnityEvent on Reward Ads")]
     private UnityEvent<RewardedAdResult> OnRewardAdvertShown;
+    private UnityEvent<StickyBannerStatus> OnBannerResultRecieved;
+
 
     [DllImport("__Internal")]
+    private static extern int ShowBanner();
+    [DllImport("__Internal")]
+    private static extern int HideBanner();
+    [DllImport("__Internal")] 
     private static extern int ShowAdvert();
     [DllImport("__Internal")]
     private static extern int ShowRewardAdvert();
+    [DllImport("__Internal")]
+    private static extern int RequestBannerStatus();
 
     /// <summary>
     /// WebGL callback to get Yandex Ad result
@@ -25,6 +33,13 @@ public class YandexAds: MonoBehaviour
         result = (AdResult)resultID;
         OnAdvertShown?.Invoke(result);
         OnAdvertShown?.RemoveAllListeners();
+    }
+
+    public void YSCB_StickyBannerResult(int resultID)
+    {
+        StickyBannerStatus result = (StickyBannerStatus)resultID;
+        OnBannerResultRecieved?.Invoke(result);
+        OnBannerResultRecieved?.RemoveAllListeners();
     }
 
     /// <summary>
@@ -50,6 +65,11 @@ public class YandexAds: MonoBehaviour
         ShowAdvert();
     }
 
+    public void GetStickyBannerStatus(UnityAction<StickyBannerStatus> callback)
+    {
+        OnBannerResultRecieved.AddListener(callback);
+        RequestBannerStatus();
+    }
 
     /// <summary>
     /// Show standard ads that the user can close
