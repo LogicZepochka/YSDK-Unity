@@ -1,5 +1,6 @@
-# YSDK-Unity
-## _Интеграция SDK Яндекс.Игр в Unity_
+![Монтажная область 1](https://user-images.githubusercontent.com/62552418/205439375-fc552ce6-7fa6-49c4-b15e-39c9b6734d1a.png)
+
+_Интеграция SDK Яндекс.Игр в Unity_
 
 
 ## Содержание
