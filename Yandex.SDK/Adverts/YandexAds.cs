@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 public class YandexAds: MonoBehaviour
 {
     [Header("UnityEvent on Classic Ads")]
-    public UnityEvent<AdResult> OnAdvertShown;
+    private UnityEvent<AdResult> OnAdvertShown;
     [Header("UnityEvent on Reward Ads")]
-    public UnityEvent<RewardedAdResult> OnRewardAdvertShown;
+    private UnityEvent<RewardedAdResult> OnRewardAdvertShown;
 
     [DllImport("__Internal")]
     private static extern int ShowAdvert();

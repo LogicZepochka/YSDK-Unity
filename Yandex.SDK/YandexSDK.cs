@@ -44,8 +44,8 @@ public class YandexSDK : MonoBehaviour
 
     // EVENTS
 
-    public UnityEvent<YaPlayer> OnPlayerDataChanged;
-    public UnityEvent<RatingResult> OnRated;
+    private UnityEvent<YaPlayer> OnPlayerDataChanged;
+    private UnityEvent<RatingResult> OnRated;
 
 
 
@@ -69,7 +69,7 @@ public class YandexSDK : MonoBehaviour
         }
         if (_instance == null)
         {
-            Debug.Log("Yandex SDK v1.0.0 initialized");
+            Debug.Log("Yandex SDK v1.0.1 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
             _leaderboard = GetComponent<YandexLeaderboard>();
