@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,8 +12,15 @@ public enum YaDevice
     TV
 }
 
+public enum YandexAutorizeStatus
+{
+    None,
+    Autorized
+}
+
 [RequireComponent(typeof(YandexAds))]
 [RequireComponent(typeof(YandexLeaderboard))]
+[RequireComponent(typeof(YandexSDKDataProvider))]
 public class YandexSDK : MonoBehaviour
 {
     /// <summary>
@@ -22,7 +30,7 @@ public class YandexSDK : MonoBehaviour
     /// <summary>
     /// Get current player data
     /// </summary>
-    public YaPlayer Player;
+    public YaPlayer Player => _player;
     /// <summary>
     /// Get current device
     /// </summary>
@@ -36,23 +44,37 @@ public class YandexSDK : MonoBehaviour
     /// </summary>
     public YandexLeaderboard Leaderboards => _leaderboard;
 
+    public YandexSDKDataProvider DataProvider => _dataprovider;
+
     private static YandexSDK _instance;
     private YaDevice _device;
-    private YaPlayer _player;
+    private YaPlayer _player = new YaPlayer();
     private YandexAds _ads;
     private YandexLeaderboard _leaderboard;
+    private YandexSDKDataProvider _dataprovider;
 
     // EVENTS
 
     public UnityEvent<YaPlayer> OnPlayerDataChanged;
-    public UnityEvent<RatingResult> OnRated;
 
+    public UnityEvent<YandexAutorizeStatus> OnPlayerAuthStatusRecieved;
+    public UnityEvent<RatingResult> OnRated;
+    public UnityEvent OnReady;
+    public UnityEvent OnBrowserClosed;
 
 
     [DllImport("__Internal")] 
     private static extern void GetPlayerData();
+
+
+    [DllImport("__Internal")]
+    private static extern void GetPlayerDataDifferent();
     [DllImport("__Internal")] 
-    private static extern int GetDeviceID();
+    private static extern int GetDeviceID(); 
+    [DllImport("__Internal")]
+    private static extern void IsPlayerAuth();
+    [DllImport("__Internal")]
+    private static extern void AuthPlayer();
 
     [DllImport("__Internal")]
     private static extern void DebugLog(string msg);
@@ -61,7 +83,7 @@ public class YandexSDK : MonoBehaviour
     private static extern void AskForRating();
 
 
-    private void Start()
+    private void Awake()
     {
         if (Debug.isDebugBuild)
         {
@@ -69,22 +91,38 @@ public class YandexSDK : MonoBehaviour
         }
         if (_instance == null)
         {
-            Debug.Log("Yandex SDK v1.0.1 initialized");
+            Debug.Log("Unity YSDK v1.3.0 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
             _leaderboard = GetComponent<YandexLeaderboard>();
+            _dataprovider = GetComponent<YandexSDKDataProvider>();
             DontDestroyOnLoad(gameObject);
-            _device = GetDevice();
+            //GetDevice();
+            Ads.ShowClassicAd();
         }
+    }
+
+    private void Start()
+    {
+        GetDevice();
+        OnReady?.Invoke();
     }
 
     /// <summary>
     /// Load Yandex Player data from Yandex.SDK
     /// </summary>
+    [System.Obsolete]
     public void SetupPlayer()
     {
         _player = new YaPlayer();
         GetPlayerData();
+    }
+
+    public void SetupYandexPlayer(UnityAction<YaPlayer> callback)
+    {
+        OnPlayerDataChanged?.AddListener(callback);
+        _player = new YaPlayer();
+        GetPlayerDataDifferent();
     }
 
     /// <summary>
@@ -93,17 +131,46 @@ public class YandexSDK : MonoBehaviour
     /// <param name="json">PlayerData</param>
     public void YSCB_ReceivePlayerData(string json)
     {
+        //Debug.Log(json);
         _player = JsonUtility.FromJson<YaPlayer>(json);
+        //Debug.Log(_player.name);
+        //Debug.Log(_player.smallPhoto);
         OnPlayerDataChanged?.Invoke(_player);
-        OnPlayerDataChanged?.RemoveAllListeners();
+        OnPlayerDataChanged.RemoveAllListeners();
     }
 
-
-    private YaDevice GetDevice()
+    public void YSCB_OnBrowserClosed()
     {
-        int deviceID = GetDeviceID();
-        YaDevice device = (YaDevice)deviceID;
-        return (YaDevice)deviceID;
+        OnBrowserClosed?.Invoke();
+    }
+
+    public void RequestPlayerAuthStatus(UnityAction<YandexAutorizeStatus> callback)
+    {
+        OnPlayerAuthStatusRecieved.AddListener(callback);
+        IsPlayerAuth();
+    }
+
+    public void RequestPlayerAuth(UnityAction<YandexAutorizeStatus> callback)
+    {
+        OnPlayerAuthStatusRecieved.AddListener(callback);
+        AuthPlayer();
+    }
+
+    public void YSCB_ReceivePlayerAuthStatus(int statusID)
+    {
+        YandexAutorizeStatus status = (YandexAutorizeStatus)statusID;
+        OnPlayerAuthStatusRecieved?.Invoke(status);
+        OnPlayerAuthStatusRecieved?.RemoveAllListeners();
+    }
+
+    private void GetDevice()
+    {
+        GetDeviceID();
+    }
+
+    public void YSCB_OnDeviceRecieved(int id)
+    {
+        _device = (YaDevice)id;
     }
 
     /// <summary>
@@ -132,8 +199,7 @@ public class YandexSDK : MonoBehaviour
     {
         
         RatingResult result = (RatingResult)resultID;
-        Debug.Log($"Rating callback return code: {resultID} - {result.ToString()}");
-        OnRated?.Invoke(result);
+        OnRated?.Invoke(result);    
         OnRated?.RemoveAllListeners();
     }
 }

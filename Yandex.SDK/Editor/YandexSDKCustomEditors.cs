@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEngine.SceneManagement;
 
 [CustomEditor(typeof(YandexSDK))]
 public class YandexSDKCustomEditors : Editor
@@ -54,3 +57,19 @@ public class YandexSDKCustomEditors : Editor
         
     }
 }
+
+#if UNITY_EDITOR
+public class YandexSDKPrebuildProcessor : IProcessSceneWithReport
+{
+    public int callbackOrder => 0;
+
+    public void OnProcessScene(Scene scene, BuildReport report)
+    {
+        if(scene.buildIndex != 0 && Object.FindObjectOfType<YandexSDK>() != null)
+        {
+            Debug.LogError($"YandexSDK prefab must be placed on the first scene of your project. Detected on scene index {scene.buildIndex}");
+            throw new BuildFailedException("YandexSDK prefab must be placed on the first scene of your project");
+        }
+    }
+}
+#endif

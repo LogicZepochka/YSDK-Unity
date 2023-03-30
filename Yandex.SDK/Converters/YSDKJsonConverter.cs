@@ -20,6 +20,7 @@ public static class YSDKJsonConverter
     /// <returns>Leaderboard rating</returns>
     public static LeaderboardData ConvertToLeaderboardData(string json)
     {
+        //Debug.LogWarning("ConvertToLeaderboardData");
         return JsonUtility.FromJson<LeaderboardData>(json);
     }
 }

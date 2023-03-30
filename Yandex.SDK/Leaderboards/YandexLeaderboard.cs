@@ -5,7 +5,18 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Events;
 
-[HideInInspector]
+public struct LeaderboardAdds
+{
+    public string key;
+    public int value;
+
+    public LeaderboardAdds(string key, int value)
+    {
+        this.key = key;
+        this.value = value;
+    }
+}
+
 public class YandexLeaderboard : MonoBehaviour
 {
     public UnityEvent<LeaderboardDescription> OnLeaderboardDescriptionReceived;
@@ -26,6 +37,10 @@ public class YandexLeaderboard : MonoBehaviour
     [DllImport("__Internal")]
     private static extern void RequestLeaderboard(string name, bool includeUser, int quantityAround, int quantityTop);
 
+    public Queue<LeaderboardAdds> LeaderboardNewEntries = new Queue<LeaderboardAdds>();
+
+    private Coroutine _newEntriesCoroutine;
+
     public void GetLeaderboardDescription(string name, UnityAction<LeaderboardDescription> callback)
     {
         OnLeaderboardDescriptionReceived.AddListener(callback);
@@ -37,6 +52,13 @@ public class YandexLeaderboard : MonoBehaviour
         OnLeaderboardAvailableReceived?.AddListener(callback);
         AskLeaderboardAvailable();
     }
+
+    public void AddNewLeaderboardScore(string leaderboard,int value)
+    {
+        LeaderboardNewEntries.Enqueue(new LeaderboardAdds(leaderboard, value));
+    }
+
+
 
     public void YSCB_ReceiveLeaderboardDescription(string desc)
     {
@@ -51,9 +73,16 @@ public class YandexLeaderboard : MonoBehaviour
         OnLeaderboardAvailableReceived?.RemoveAllListeners();
     }
 
+    public void PushLeaderboardScore()
+    {
+        StartCoroutine(PutNewEntries());
+    }
+
+    [System.Obsolete("Use AddNewLeaderboardScore, then PushLeaderboardScore to add new scores to leaderboards")]
     public void SetLeaderboardScore(string name,int value)
     {
-        AskSetLeaderboardScore(name, value);
+        AddNewLeaderboardScore(name, value);
+        //AskSetLeaderboardScore(name, value);
     }
 
     public void GetLeaderboardRating(string lbName,UnityAction<LeaderboardRatingStatus, LeaderboardEntry> callback)
@@ -86,5 +115,15 @@ public class YandexLeaderboard : MonoBehaviour
         LeaderboardData data = YSDKJsonConverter.ConvertToLeaderboardData(json);
         OnLeaderboardDataReceived?.Invoke(data);
         OnLeaderboardDataReceived?.RemoveAllListeners();
+    }
+
+    IEnumerator PutNewEntries()
+    {
+        while(LeaderboardNewEntries.Count > 0)
+        {
+            LeaderboardAdds lbAdd = LeaderboardNewEntries.Dequeue();
+            AskSetLeaderboardScore(lbAdd.key, lbAdd.value);
+            yield return new WaitForSeconds(2f);
+        }
     }
 }

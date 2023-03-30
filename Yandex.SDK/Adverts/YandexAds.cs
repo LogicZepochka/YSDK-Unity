@@ -2,29 +2,18 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
 
-[HideInInspector]
+
 public class YandexAds: MonoBehaviour
 {
     [Header("UnityEvent on Classic Ads")]
     public UnityEvent<AdResult> OnAdvertShown;
     [Header("UnityEvent on Reward Ads")]
     public UnityEvent<RewardedAdResult> OnRewardAdvertShown;
-    public UnityEvent<StickyBannerStatus> OnBannerResultRecieved;
-
 
     [DllImport("__Internal")]
-    private static extern void ShowBanner();
-    [DllImport("__Internal")]
-    private static extern void HideBanner();
-    [DllImport("__Internal")] 
     private static extern int ShowAdvert();
     [DllImport("__Internal")]
     private static extern int ShowRewardAdvert();
-    [DllImport("__Internal")]
-    private static extern int RequestBannerStatus();
-
-    public void ShowStickyBanner() => ShowBanner();
-    public void HideStickyBanner() => HideBanner();
 
     /// <summary>
     /// WebGL callback to get Yandex Ad result
@@ -36,14 +25,6 @@ public class YandexAds: MonoBehaviour
         result = (AdResult)resultID;
         OnAdvertShown?.Invoke(result);
         OnAdvertShown?.RemoveAllListeners();
-    }
-
-    public void YSCB_StickyBannerResult(int resultID)
-    {
-        Debug.Log($"StickyBanner result is {resultID}");
-        StickyBannerStatus result = (StickyBannerStatus)resultID;
-        OnBannerResultRecieved?.Invoke(result);
-        OnBannerResultRecieved?.RemoveAllListeners();
     }
 
     /// <summary>
@@ -69,11 +50,6 @@ public class YandexAds: MonoBehaviour
         ShowAdvert();
     }
 
-    public void GetStickyBannerStatus(UnityAction<StickyBannerStatus> callback)
-    {
-        OnBannerResultRecieved.AddListener(callback);
-        RequestBannerStatus();
-    }
 
     /// <summary>
     /// Show standard ads that the user can close

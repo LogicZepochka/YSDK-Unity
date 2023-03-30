@@ -180,4 +180,25 @@ public class DemoScript : MonoBehaviour
         }
     }
 
+
+    public void PutPlayerData()
+    {
+        YandexSDK.Current.Player.PlayerData.SetStats("money", 200);
+        YandexSDK.Current.Player.PlayerData.SetStats("exp", 4800);
+        YandexSDK.Current.Player.PlayerData.SetStats("score", 3200);
+
+        YandexSDK.Current.Player.PlayerData.SetData("ach_first_data", "claimed");
+
+        YandexSDK.Current.Player.PlayerData.SavePlayer();
+        YandexSDK.Current.Player.PlayerData.IncrementStat("money", -70);
+    }
+
+    public void CheckPlayerData()
+    {
+        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("money"));
+        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("exp"));
+        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("score"));
+
+        Debug.Log(YandexSDK.Current.Player.PlayerData.GetData("ach_first_data"));
+    }
 }

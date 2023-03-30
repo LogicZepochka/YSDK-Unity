@@ -11,11 +11,3 @@ public enum RewardedAdResult
     Closed,
     Error
 }
-
-public enum StickyBannerStatus
-{
-    NotShowing,
-    Showing,
-    AdvIsNotConnected,
-    Unknown
-}

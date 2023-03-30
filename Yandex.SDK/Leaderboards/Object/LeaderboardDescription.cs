@@ -11,6 +11,7 @@ public class Description
 public class Title
 {
     public string ru;
+    public string en;
 }
 
 [Serializable]

@@ -1,22 +1,23 @@
 mergeInto(LibraryManager.library, {
 
+    // OBSOLETE
     GetPlayerData: function () {
         var playerJson;
         try {
-            if (window.player.getMode() === 'lite') {
+            if (window.player.getMode() == 'lite') {
                 // Игрок не авторизован.
                 window.ysdk.auth.openAuthDialog().then(() => {
-                    console.warn("Player Login Succes Check Send Data");
-                    playerJson = {
-                        "uID": window.player.getUniqueID(),
-                        "name": window.player.getName(),
-                        "auth": true,
-                        "smallPhoto": window.player.getPhoto("small"),
-                        "mediumPhoto": window.player.getPhoto("medium"),
-                        "largePhoto": window.player.getPhoto("large")
-                    };
+                    window.ysdk.getPlayer().then(_player => {
+                        playerJson = {
+                            "uID": window.player.getUniqueID(),
+                            "name": window.player.getName(),
+                            "auth": true,
+                            "smallPhoto": window.player.getPhoto("small"),
+                            "mediumPhoto": window.player.getPhoto("medium"),
+                            "largePhoto": window.player.getPhoto("large")
+                        }
+                    });
                 }).catch(() => {
-                    console.warn("Player NotLogin Check Send Data");
                     playerJson = {
                         "uID": window.player.getUniqueID(),
                         "name": "Guest" + Math.floor(Math.random() * 500000),
@@ -37,21 +38,63 @@ mergeInto(LibraryManager.library, {
                     "largePhoto": window.player.getPhoto("large")
                 };
             }
-            console.warn("Player Login Check Send Data");
             window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerData", JSON.stringify(playerJson));
         }
         catch (e) {
+            console.warn("ERROR AUTH! " + e);
             console.error(e);
         }
     },
 
+    GetPlayerDataDifferent: function () {
+        var playerJson;
+        window.ysdk.getPlayer().then(_player => {
+            playerJson = {
+                "uID": window.player.getUniqueID(),
+                "name": window.player.getName(),
+                "auth": true,
+                "smallPhoto": window.player.getPhoto("small"),
+                "mediumPhoto": window.player.getPhoto("medium"),
+                "largePhoto": window.player.getPhoto("large")
+            };
+            window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerData", JSON.stringify(playerJson));
+        });
+    },
+
+    IsPlayerAuth: function () {
+        window.ysdk.getPlayer().then(_player => {
+            var result;
+            if (_player.getMode() === 'lite') {
+                result = 0;
+            }
+            else {
+                result = 1;
+            }
+            window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerAuthStatus", result);
+        });
+    },
+
+    AuthPlayer: function () {
+        var result;
+        window.ysdk.auth.openAuthDialog().then(() => {
+            window.ysdk.getPlayer().then(_player => {
+                window.player = _player;
+                result = 1;
+                window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerAuthStatus", result);
+            });
+        }).catch(() => {
+            result = 0;
+            window.unityInstance.SendMessage("YaSDK", "YSCB_ReceivePlayerAuthStatus", result);
+        });
+    },
+
     GetDeviceID: function () {
-        switch (window.deviceType) {
-            case "desktop": { return 2; break; }
-            case "mobile": { return 1; break; }
-            case "tablet": { return 3; break; }
-            case "tv": { return 4; break; }
-            default: { return 0; break; }
+        switch (window.ysdk.deviceInfo.type) {
+            case "desktop": { window.unityInstance.SendMessage("YaSDK", "YSCB_OnDeviceRecieved", 2); break; }
+            case "mobile": { window.unityInstance.SendMessage("YaSDK", "YSCB_OnDeviceRecieved",1); break; }
+            case "tablet": { window.unityInstance.SendMessage("YaSDK", "YSCB_OnDeviceRecieved", 3); break; }
+            case "tv": { window.unityInstance.SendMessage("YaSDK", "YSCB_OnDeviceRecieved", 4); break; }
+            default: { window.unityInstance.SendMessage("YaSDK", "YSCB_OnDeviceRecieved", 0); break; }
         }
     },
 
@@ -123,14 +166,36 @@ mergeInto(LibraryManager.library, {
     AskSetLeaderboardScore: function (rawNameStr, value) {
         var lbname = UTF8ToString(rawNameStr);
         window.ysdk.getLeaderboards()
-            .then(lb => {
-                lb.setLeaderboardScore(lbname, value);
+            .then(lb => lb.getLeaderboardPlayerEntry(lbname))
+            .then(res => {
+                var json = {
+                    "playerName": res.player.publicName,
+                    "imageURL": res.player.getAvatarSrc("small"),
+                    "rank": res.rank,
+                    "score": res.score
+                };
+                if (value > res.score) {
+                    window.ysdk.getLeaderboards()
+                        .then(lb => {
+                            lb.setLeaderboardScore(lbname, value);
+                        });
+                }
+            })
+            .catch(err => {
+                if (err.code === 'LEADERBOARD_PLAYER_NOT_PRESENT') {
+                    window.ysdk.getLeaderboards()
+                        .then(lb => {
+                            lb.setLeaderboardScore(lbname, value);
+                        });
+                }
+                else {
+                    console.log(err);
+                }
             });
     },
 
     AskPlayerLeaderboardRating: function (rawNameStr) {
         var lbname = UTF8ToString(rawNameStr);
-        console.log(lbname);
         window.ysdk.getLeaderboards()
             .then(lb => lb.getLeaderboardPlayerEntry(lbname))
             .then(res => {
@@ -143,8 +208,8 @@ mergeInto(LibraryManager.library, {
                 window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", JSON.stringify(json));
             })
             .catch(err => {
-                if (err.code === 'LEADERBOARD_PLAYER_NOT_PRESENT') {
-                    window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", res);
+                if (err.code === "LEADERBOARD_PLAYER_NOT_PRESENT") {
+                    window.unityInstance.SendMessage("YaSDK", "YSCB_LeaderboardRatingCallback", "LEADERBOARD_PLAYER_NOT_PRESENT");
                 }
                 else {
                     console.log(err);
@@ -200,9 +265,7 @@ mergeInto(LibraryManager.library, {
 
     ShowBanner: function () {
         try {
-            console.log("Sticky Banner Showing...");
             window.ysdk.adv.showBannerAdv();
-            console.log("Sticky Banner Showed...");
         }
         catch (e) {
             console.error(e);
@@ -211,9 +274,7 @@ mergeInto(LibraryManager.library, {
 
     HideBanner: function () {
         try {
-            console.log("Sticky Banner Hiding...");
             window.ysdk.adv.hideBannerAdv();
-            console.log("Sticky Banner Hided...");
         }
         catch(e) {
             console.error(e);
@@ -239,6 +300,18 @@ mergeInto(LibraryManager.library, {
                     window.unityInstance.SendMessage("YaSDK", "YSCB_AdvertResult", 3);
                 }
             }
+        });
+    },
+
+    SetPlayerData: function (data) {
+        var jsondata = UTF8ToString(data);
+        window.player.setData(JSON.parse(jsondata),"true").then(() => {
+        });
+    },
+
+    GetPlayerData: function () {
+        window.player.getData().then((result) => {
+            window.unityInstance.SendMessage("YaSDK", "YSDK_OnRecivePlayerData", JSON.stringify(result));
         });
     }
 });
