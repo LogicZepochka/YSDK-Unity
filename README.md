@@ -18,4 +18,4 @@ _Интеграция SDK Яндекс.Игр в Unity_
 
 ## Скачать ##
 
-Последняя версия: [__1.0.1__](https://github.com/LogicZepochka/YSDK-Unity/releases/)
+[Последняя версия](https://github.com/LogicZepochka/YSDK-Unity/releases/)
