@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using TMPro;
+using System;
 
 public class DemoScript : MonoBehaviour
 {
@@ -29,41 +30,13 @@ public class DemoScript : MonoBehaviour
 
     public void UpdatePlayerData()
     {
-        YandexSDK.Current.SetupPlayer();
+        YandexSDK.Current.SetupYandexPlayer(OnPlayerSetup);
     }
 
-    public void ToggleStickyBanner()
+    private void OnPlayerSetup(YaPlayer Player)
     {
-        YandexSDK.Current.Ads.GetStickyBannerStatus(StickyBannerResult);
-    }
-
-    private void StickyBannerResult(StickyBannerStatus status)
-    {
-        Debug.Log("Recieved " + status.ToString());
-        switch (status)
-        {
-            case StickyBannerStatus.AdvIsNotConnected:
-                {
-                    Debug.LogError("StickyBanner is not enabled!");
-                    break;
-                }
-            case StickyBannerStatus.NotShowing:
-                {
-                    YandexSDK.Current.Ads.ShowStickyBanner();
-                    break;
-                }
-            case StickyBannerStatus.Showing:
-                {
-                    YandexSDK.Current.Ads.HideStickyBanner();
-                    break;
-                }
-            case StickyBannerStatus.Unknown:
-            default:
-                {
-                    Debug.LogError("Unknown error detected");
-                    break;
-                }
-        }
+        PlayerImage.LoadURLImage(Player.MediumPhotoURL);
+        PlayerName.text = Player.Name;
     }
 
     public void UpdateDeviceData()
@@ -162,7 +135,8 @@ public class DemoScript : MonoBehaviour
 
     public void SetLBScore()
     {
-        YandexSDK.Current.Leaderboards.SetLeaderboardScore("testleaderboard", 175);
+        YandexSDK.Current.Leaderboards.AddNewLeaderboardScore("testleaderboard", 175);
+        YandexSDK.Current.Leaderboards.PushLeaderboardScore();
     }
 
     private void OnLeaderboardRatingReceive(LeaderboardRatingStatus status, LeaderboardEntry info)
@@ -183,22 +157,11 @@ public class DemoScript : MonoBehaviour
 
     public void PutPlayerData()
     {
-        YandexSDK.Current.Player.PlayerData.SetStats("money", 200);
-        YandexSDK.Current.Player.PlayerData.SetStats("exp", 4800);
-        YandexSDK.Current.Player.PlayerData.SetStats("score", 3200);
-
-        YandexSDK.Current.Player.PlayerData.SetData("ach_first_data", "claimed");
-
-        YandexSDK.Current.Player.PlayerData.SavePlayer();
-        YandexSDK.Current.Player.PlayerData.IncrementStat("money", -70);
+        // TODO: Write new demo save-load
     }
 
     public void CheckPlayerData()
     {
-        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("money"));
-        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("exp"));
-        Debug.Log(YandexSDK.Current.Player.PlayerData.GetStat("score"));
-
-        Debug.Log(YandexSDK.Current.Player.PlayerData.GetData("ach_first_data"));
+        // TODO: Write new demo save-load
     }
 }

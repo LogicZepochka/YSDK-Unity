@@ -91,7 +91,7 @@ public class YandexSDK : MonoBehaviour
         }
         if (_instance == null)
         {
-            Debug.Log("Unity YSDK v1.3.0 initialized");
+            Debug.Log("Unity YSDK v2.0.1 initialized");
             _instance = this;
             _ads = GetComponent<YandexAds>();
             _leaderboard = GetComponent<YandexLeaderboard>();
