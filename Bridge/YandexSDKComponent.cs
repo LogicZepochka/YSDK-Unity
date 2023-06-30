@@ -57,14 +57,12 @@ namespace Logzep.YandexSDK
         {
             AdvResult AdReslt = (AdvResult)result;
             YandexSDK.Ads.OnAdvertShown?.Invoke(AdReslt);
-            YandexSDK.OnRatingChanged?.RemoveAllListeners();
         }
 
         public void YSDK_RewardedAdResult(int result)
         {
             RewardedAdvResult AdReslt = (RewardedAdvResult)result;
             YandexSDK.Ads.OnRewardedAdvertShown?.Invoke(AdReslt);
-            YandexSDK.OnRatingChanged?.RemoveAllListeners();
         }
     }
 }

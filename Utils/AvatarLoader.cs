@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace Logzep.YandexSDK.Utils
 {
+    [RequireComponent(typeof(Image))]
     public class AvatarLoader: MonoBehaviour
     {
         [Header("Avatar settings")]
@@ -21,6 +22,12 @@ namespace Logzep.YandexSDK.Utils
 
         private void Start()
         {
+            if(UIImage == null)
+            {
+                UIImage = GetComponent<Image>();
+                if (UIImage == null)
+                    throw new Exception(gameObject.name+": AvatarLoader not found Image component!");
+            }
             if (UseDefaultPicture)
             {
                 UIImage.sprite = DefaultPicture;
