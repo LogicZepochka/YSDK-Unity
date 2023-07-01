@@ -23,11 +23,15 @@ namespace Logzep.YandexSDK.Advertising
 
         public void ShowAdv()
         {
+            if (!YandexSDK.IsInitialized)
+                throw new Exception("YandexSDK is not initialized!");
             ShowAd();
         }
 
         public void ShowRewardedAdv()
         {
+            if (!YandexSDK.IsInitialized)
+                throw new Exception("YandexSDK is not initialized!");
             ShowRewardedAd();
         }
 

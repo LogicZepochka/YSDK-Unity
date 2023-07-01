@@ -13,10 +13,8 @@ namespace Logzep.YandexSDK
 
         public static YandexPlayer GetPlayer => _player;
         public static YandexAdvert Ads => _advertisement;
-
-        private static YandexPlayer _player;
-
-        private static YandexSDKComponent _bridgeComponent = null;
+        public static bool IsInitialized => _bridgeComponent != null;
+        
 
         public static UnityEvent OnYSDKInit = new UnityEvent();
         public static UnityEvent<YandexPlayer> OnPlayerUpdated = new UnityEvent<YandexPlayer>();
@@ -24,6 +22,9 @@ namespace Logzep.YandexSDK
         public static UnityEvent<RatingResult> OnRatingChanged = new UnityEvent<RatingResult>();
 
         private static YandexAdvert _advertisement;
+        private static YandexPlayer _player;
+
+        private static YandexSDKComponent _bridgeComponent = null;
 
         private static void CheckPlatform()
         {
@@ -54,6 +55,7 @@ namespace Logzep.YandexSDK
 
         public static void RateGame(UnityAction<RatingResult> callback)
         {
+            CheckInitialized();
             OnRatingChanged.AddListener(callback);
             RateGame();
         }
@@ -77,6 +79,15 @@ namespace Logzep.YandexSDK
                 throw new Exception("YandexSDK-Unity bridge is not initialized!");
         }
 
+        internal static void SavePlayerData(string json)
+        {
+            CheckInitialized();
+            _bridgeComponent.SavePlayerData();
+        }
 
+        internal static void LoadPlayerData()
+        {
+            CheckInitialized();
+        }
     }
 }

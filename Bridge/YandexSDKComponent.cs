@@ -64,5 +64,15 @@ namespace Logzep.YandexSDK
             RewardedAdvResult AdReslt = (RewardedAdvResult)result;
             YandexSDK.Ads.OnRewardedAdvertShown?.Invoke(AdReslt);
         }
+
+        internal void LoadPlayerData()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SavePlayerData()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -105,5 +105,13 @@ mergeInto(LibraryManager.library, {
 				}
 			}
 		})
+	},
+
+	LoadPlayerData: function () {
+		window.player.getData().then((data) => {
+			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_PlayerDataRecieved", data);
+		}).catch((reason) => {
+
+		});
 	}
 });
