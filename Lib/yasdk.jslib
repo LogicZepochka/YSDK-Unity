@@ -107,11 +107,22 @@ mergeInto(LibraryManager.library, {
 		})
 	},
 
-	LoadPlayerData: function () {
-		window.player.getData().then((data) => {
-			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_PlayerDataRecieved", data);
-		}).catch((reason) => {
-
-		});
+	GetEnviroment: function () {
+		var id = window.ysdk.environment.app.id;
+		var lang = window.ysdk.environment.i18n.lang;
+		var payload = window.ysdk.environment.i18n.payload;
+		var device = 10;
+		switch (window.ysdk.deviceInfo.type) {
+			case "desktop": { device = 0; break }
+			case "mobile": { device = 1; break }
+			case "tablet": { device = 2; break }
+			case "tv": { device = 3; break }
+		}
+		if (payload != null) {
+			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_InitEnviroment", id, lang, device, payload); // string id,string lang, int deviceID,string payload = ""
+		}
+		else {
+			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_InitEnviroment", id, lang, device, "");
+		}
 	}
 });

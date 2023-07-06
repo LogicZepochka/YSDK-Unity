@@ -12,8 +12,10 @@ namespace Logzep.YandexSDK
         public static string Version => "2.0.2";
 
         public static YandexPlayer GetPlayer => _player;
+        public static YandexPlayerData GetPlayerData => _playerData;
         public static YandexAdvert Ads => _advertisement;
         public static bool IsInitialized => _bridgeComponent != null;
+        public static Environment Env => _enviroment;
         
 
         public static UnityEvent OnYSDKInit = new UnityEvent();
@@ -23,6 +25,8 @@ namespace Logzep.YandexSDK
 
         private static YandexAdvert _advertisement;
         private static YandexPlayer _player;
+        private static YandexPlayerData _playerData;
+        private static Environment _enviroment;
 
         private static YandexSDKComponent _bridgeComponent = null;
 
@@ -41,8 +45,8 @@ namespace Logzep.YandexSDK
                 Debug.LogWarning("YandexSDK-Unity alredy initialized");
                 return;
             }
-            _advertisement = new YandexAdvert();
             CheckPlatform();
+            _advertisement = new YandexAdvert();
             GameObject go = new GameObject("YandexSDKBridge");
             _bridgeComponent = go.AddComponent<YandexSDKComponent>();
         }
@@ -51,6 +55,16 @@ namespace Logzep.YandexSDK
         {
             CheckInitialized();
             _bridgeComponent.RateGame();
+        }
+
+        public static void ApplyEnviroment(string json)
+        {
+            _enviroment = new Environment(json);
+            if(_enviroment == null)
+            {
+                throw new Exception("failed to load Enviroment!");
+            }
+            OnYSDKInit?.Invoke();
         }
 
         public static void RateGame(UnityAction<RatingResult> callback)
@@ -82,10 +96,9 @@ namespace Logzep.YandexSDK
         internal static void SavePlayerData(string json)
         {
             CheckInitialized();
-            _bridgeComponent.SavePlayerData();
         }
 
-        internal static void LoadPlayerData()
+        internal static void LoadPlayerData(string[] keys)
         {
             CheckInitialized();
         }

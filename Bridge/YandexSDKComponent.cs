@@ -18,6 +18,8 @@ namespace Logzep.YandexSDK
         private static extern void InitStart();
         [DllImport("__Internal")]
         private static extern void Rate();
+        [DllImport("__Internal")]
+        private static extern void GetEnviroment();
 
         public void Start()
         {
@@ -42,8 +44,13 @@ namespace Logzep.YandexSDK
         public void YSDK_InitPlayer(string playerJson)
         {
             YandexSDK.ParsePlayerInfo(playerJson);
+            GetEnviroment();
+        }
+
+        public void YSDK_InitEnviroment(string json)
+        {
+            YandexSDK.ApplyEnviroment(json);
             InitFinish(Application.productName, Application.version, YandexSDK.Version);
-            YandexSDK.OnYSDKInit?.Invoke();
         }
 
         public void YSDK_RateResult(int result)
@@ -65,14 +72,13 @@ namespace Logzep.YandexSDK
             YandexSDK.Ads.OnRewardedAdvertShown?.Invoke(AdReslt);
         }
 
-        internal void LoadPlayerData()
+        public void YSDK_PlayerDataRecieved(string[] keys,string[] values)
         {
-            throw new NotImplementedException();
+            if (keys.Length != values.Length)
+                throw new Exception("Recieved strange data from YandexGames (keys length no equal values length)");
+            YandexSDK.GetPlayerData.SaveData(keys, values);
         }
 
-        internal void SavePlayerData()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
