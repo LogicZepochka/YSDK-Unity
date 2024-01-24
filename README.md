@@ -11,7 +11,6 @@ _Интеграция SDK Яндекс.Игр в Unity_
 ## Установка
 
 1. Скачайте готовый [UnityPackage](https://github.com/LogicZepochka/YSDK-Unity/releases/) и ипортируйте его в свой проект.
-2. Добавьте префаб YaSDK на самую первую сцену вашей игры.
 
 # Использование
 Описание функций и примеры можно посмотреть [здесь](https://github.com/LogicZepochka/YSDK-Unity/wiki/%D0%92%D0%B7%D0%B0%D0%B8%D0%BC%D0%BE%D0%B4%D0%B5%D0%B9%D1%81%D1%82%D0%B2%D0%B8%D0%B5)
