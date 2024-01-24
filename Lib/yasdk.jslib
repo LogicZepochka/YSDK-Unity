@@ -15,7 +15,7 @@ mergeInto(LibraryManager.library, {
 			window.ysdk.getLeaderboards().then(_lb => window.ysdkLB = _lb);
 			window.ysdk.getPlayer().then(_player => {
 				window.player = _player;
-				let playerObject = {
+				var playerObject = {
 					name: "",
 					uid: "",
 					sphoto: "",
@@ -109,27 +109,28 @@ mergeInto(LibraryManager.library, {
 	},
 
 	GetEnviroment: function () {
-		let id = window.ysdk.environment.app.id;
-		let lang = window.ysdk.environment.i18n.lang;
-		let payload = window.ysdk.environment.i18n.payload;
-		let device = 10;
+		var id = window.ysdk.environment.app.id;
+		var lang = window.ysdk.environment.i18n.lang;
+		var payload = window.ysdk.environment.i18n.payload;
+		var device = 10;
 		switch (window.ysdk.deviceInfo.type) {
 			case "desktop": { device = 0; break }
 			case "mobile": { device = 1; break }
 			case "tablet": { device = 2; break }
 			case "tv": { device = 3; break }
 		}
-		if (payload != null) {
-			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_InitEnviroment", id, lang, device, payload);
-		}
-		else {
-			window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_InitEnviroment", id, lang, device, "");
-		}
+		var rtrn = {
+			id: id,
+			payload: payload == null ? "" : payload,
+			Lang: lang,
+			deviceID: device
+		};
+		window.unityInstance.SendMessage("YandexSDKBridge", "YSDK_InitEnviroment", JSON.stringify(rtrn));
 	},
 
 	// YaLeaderboards
 	RequestLeaderboardDescription: function (lbName) {
-		window.ysdkLB.getLeaderboardDescription(${UTF8ToString(lbName)})
+		window.ysdkLB.getLeaderboardDescription(UTF8ToString(lbName))
 			.then(res => {
 				let lbData = {
 					Default: false,
@@ -152,20 +153,20 @@ mergeInto(LibraryManager.library, {
 			});
 	},
 
-	SetLeaderboardScore: function (lbName,value) {
-		window.ysdkLB.setLeaderboardScore(${UTF8ToString(lbName)}, value);
+	SetLeaderboardScore: function (lbName, value) {
+		window.ysdkLB.setLeaderboardScore(UTF8ToString(lbName), value);
 	},
 
-	
 
-	GetLeaderboardPlayerRating: function (lbName) {
+
+	GetLeaderboardPRating: function (lbName) {
 		let lbRatingData = {
 			Score: 0,
 			Rank: 0,
 			Error: false,
 			ErrorMessage: ""
 		};
-		window.ysdkLB.getLeaderboardPlayerEntry(${UTF8ToString(lbName)})
+		window.ysdkLB.getLeaderboardPlayerEntry(UTF8ToString(lbName))
 			.then(res => {
 				lbRatingData.Score = res.score;
 				lbRatingData.Rank = res.rank;
@@ -205,13 +206,13 @@ mergeInto(LibraryManager.library, {
 		};
 
 		if (includePlayer) {
-			window.ysdkLB.getLeaderboardEntries(${ UTF8ToString(lbName) }, { quantityTop: top, quantityAround: aroundPlayer, includeUser: true })
+			window.ysdkLB.getLeaderboardEntries(UTF8ToString(lbName), { quantityTop: top, quantityAround: aroundPlayer, includeUser: true })
 				.then(res => {
 					proceedData(res);
 				});
 		}
 		else {
-			window.ysdkLB.getLeaderboardEntries(${ UTF8ToString(lbName) }, { quantityTop: top })
+			window.ysdkLB.getLeaderboardEntries(UTF8ToString(lbName), { quantityTop: top })
 				.then(res => {
 					proceedData(res);
 				});
