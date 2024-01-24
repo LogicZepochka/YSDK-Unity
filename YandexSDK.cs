@@ -1,5 +1,6 @@
 ﻿using Logzep.YandexSDK.Advertising;
 using Logzep.YandexSDK.DTO;
+using Logzep.YandexSDK.Leaderboards;
 using Logzep.YandexSDK.Player;
 using System;
 using UnityEngine;
@@ -13,7 +14,8 @@ namespace Logzep.YandexSDK
 
         public static YandexPlayer GetPlayer => _player;
         public static YandexPlayerData GetPlayerData => _playerData;
-        public static YandexAdvert Ads => _advertisement;
+        public static YandexAds Ads => _advertisement;
+        public static YandexLeaderboards Leaderboards => _leaderboards;
         public static bool IsInitialized => _bridgeComponent != null;
         public static Environment Env => _enviroment;
         
@@ -22,10 +24,12 @@ namespace Logzep.YandexSDK
         public static UnityEvent<YandexPlayer> OnPlayerUpdated = new UnityEvent<YandexPlayer>();
         public static UnityEvent<YandexPlayer> OnPlayerAuth = new UnityEvent<YandexPlayer>();
         public static UnityEvent<RatingResult> OnRatingChanged = new UnityEvent<RatingResult>();
+        
 
-        private static YandexAdvert _advertisement;
+        private static YandexAds _advertisement;
         private static YandexPlayer _player;
         private static YandexPlayerData _playerData;
+        private static YandexLeaderboards _leaderboards;
         private static Environment _enviroment;
 
         private static YandexSDKComponent _bridgeComponent = null;
@@ -46,9 +50,11 @@ namespace Logzep.YandexSDK
                 return;
             }
             CheckPlatform();
-            _advertisement = new YandexAdvert();
             GameObject go = new GameObject("YandexSDKBridge");
             _bridgeComponent = go.AddComponent<YandexSDKComponent>();
+
+            _advertisement = new YandexAds();
+            _leaderboards = new YandexLeaderboards(_bridgeComponent);
         }
 
         public static void RateGame()
@@ -102,5 +108,7 @@ namespace Logzep.YandexSDK
         {
             CheckInitialized();
         }
+
+       
     }
 }

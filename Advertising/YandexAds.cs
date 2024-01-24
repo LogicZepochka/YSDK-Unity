@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 namespace Logzep.YandexSDK.Advertising
 {
-    public class YandexAdvert
+    public class YandexAds
     {
         public UnityEvent<AdvResult> OnAdvertShown = new UnityEvent<AdvResult>();
         public UnityEvent<RewardedAdvResult> OnRewardedAdvertShown = new UnityEvent<RewardedAdvResult>();
@@ -16,7 +16,7 @@ namespace Logzep.YandexSDK.Advertising
         [DllImport("__Internal")]
         private static extern void ShowRewardedAd();
 
-        public YandexAdvert()
+        public YandexAds()
         {
 
         }

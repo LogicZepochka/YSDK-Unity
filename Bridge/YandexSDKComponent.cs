@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
+using Logzep.YandexSDK.Leaderboards;
 
 namespace Logzep.YandexSDK
 {
@@ -20,6 +21,14 @@ namespace Logzep.YandexSDK
         private static extern void Rate();
         [DllImport("__Internal")]
         private static extern void GetEnviroment();
+        [DllImport("__Internal")]
+        private static extern void RequestLeaderboardDescription(string lbName);
+        [DllImport("__Internal")]
+        private static extern void SetLeaderboardScore(string lbName,int value);
+        [DllImport("__Internal")]
+        private static extern void GetLeaderboardPRating(string lbName);
+        [DllImport("__Internal")]
+        private static extern void GetLeaderboardRating(string lbName,int aroundPlayer,int top,bool includePlayer);
 
         public void Start()
         {
@@ -40,6 +49,25 @@ namespace Logzep.YandexSDK
             Rate();
         }
 
+        public void GetLeaderboardRatingList(string leaderboardKey, bool includeUser, int quantityAround, int quantityTop)
+        {
+            GetLeaderboardRating(leaderboardKey, quantityAround, quantityTop, includeUser);
+        }
+
+        public void RequestLeaderboard(string leaderboardKey)
+        {
+            RequestLeaderboardDescription(leaderboardKey);
+        }
+
+        public void SetPlayerLeaderboardScore(string leaderboardKey,int value)
+        {
+            SetLeaderboardScore(leaderboardKey, value);
+        }
+
+        public void GetLeaderboardPlayerRating(string leaderboardKey) 
+        {
+            GetLeaderboardPRating(leaderboardKey);
+        }
 
         public void YSDK_InitPlayer(string playerJson)
         {
@@ -66,6 +94,13 @@ namespace Logzep.YandexSDK
             YandexSDK.Ads.OnAdvertShown?.Invoke(AdReslt);
         }
 
+        public void YSDK_LeaderboardDescriptionRecived(string jsonLeaderboardDescription)
+        {
+            LeaderboardDescriptionDTO lbDTO = JsonUtility.FromJson<LeaderboardDescriptionDTO>(jsonLeaderboardDescription);
+            YandexSDK.Leaderboards.OnLeaderboardDescriptionRecieved?.Invoke(new YandexLeaderboard(lbDTO));
+            YandexSDK.Leaderboards.OnLeaderboardDescriptionRecieved?.RemoveAllListeners();
+        }
+
         public void YSDK_RewardedAdResult(int result)
         {
             RewardedAdvResult AdReslt = (RewardedAdvResult)result;
@@ -79,6 +114,33 @@ namespace Logzep.YandexSDK
             YandexSDK.GetPlayerData.SaveData(keys, values);
         }
 
+        public void YSDK_LeaderboardPlayerRatingRecived(string jsonLeaderboardPlayerRating)
+        {
+            LeaderboardPlayerRatingDTO lbPRDTO = JsonUtility.FromJson<LeaderboardPlayerRatingDTO>(jsonLeaderboardPlayerRating);
+            LeaderboardError errorCode;
+            if(lbPRDTO.Error)
+            {
+                if (lbPRDTO.ErrorMessage == "LEADERBOARD_PLAYER_NOT_PRESENT")
+                {
+                    errorCode = LeaderboardError.LeaderboardPlayerNotPresent;
+                }
+                else
+                {
+                    errorCode = LeaderboardError.Unknown;
+                }
+            }
+            else
+                errorCode = LeaderboardError.None;
 
+            YandexSDK.Leaderboards.OnLeaderboardPlayerRatingRecieved?.Invoke(lbPRDTO.Rank, lbPRDTO.Score, errorCode);
+            YandexSDK.Leaderboards.OnLeaderboardPlayerRatingRecieved?.RemoveAllListeners();
+        }
+
+        public void YSDK_LeaderboardRatingRecived(string jsonLeaderboardRating)
+        {
+            LeaderboardRating Rating = JsonUtility.FromJson<LeaderboardRating>(jsonLeaderboardRating);
+            YandexSDK.Leaderboards.OnLeaderboardRatingRecieved?.Invoke(Rating);
+            YandexSDK.Leaderboards.OnLeaderboardRatingRecieved?.RemoveAllListeners();
+        }
     }
 }
